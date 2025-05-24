@@ -5,63 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thesis - Caio Rodrigues Gama</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
         body {
-            background-color: #f5f5f5;
-            font-family: Arial, sans-serif;
-            color: #333;
-            margin: 40px;
+            background-color: #569ed1; 
+            font-family: 'Roboto', Arial, sans-serif;
+            color: #212121; 
+            margin: 0;
             line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
         }
 
-        h1, h2 {
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #1a237e; 
+            text-align: center;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #283593; 
+            text-align: center;
+            font-size: 1.8em;
+            margin-top: 0;
+            margin-bottom: 40px;
+        }
+
+        h3 {
+            color: #303f9f; 
+            font-size: 1.5em;
+            border-bottom: 2px 
+            solid #90caf9; 
+            padding-bottom: 8px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+            color: #424242;
+        }
+
+        strong {
             color: #1a237e;
         }
 
         a {
-            color: #0d47a1;
+            color: #303f9f; 
+            text-decoration: none;
+            transition: color 0.3s ease-in-out;
+        }
+
+        a:hover {
+            color: #1a237e; 
+            text-decoration: underline;
         }
 
         .section {
             margin-bottom: 30px;
         }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            background-color: #eef7fd; 
+            margin-bottom: 10px;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border-left: 5px solid #64b5f6; 
+            transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+        }
+
+        ul li:hover {
+            transform: translateX(5px);
+            background-color: #e3f2fd;
+        }
+
+        .language-switch {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #bbdefb;
+        }
     </style>
 </head>
 <body>
-    <h1>Undergraduate Thesis</h1>
-    <h2>Caio Rodrigues Gama</h2>
+    <div class="container">
+        <h1>Undergraduate Thesis</h1>
+        <h2>Caio Rodrigues Gama</h2>
 
-    <div class="section">
-        <h3>Project Proposal</h3>
-        <p>
-            <strong>Title:</strong> Interactive 2D Platform for Exploring the USP Campus
-        </p>
-        <p>
-            <strong>Abstract:</strong> This project aims to develop a 2D platform, similar to old-school Pokémon games, simulating the experience of a new student exploring the USP campus. 
-            The application will be interactive and educational, allowing the user to learn about the buildings, services, fun facts, and common paths around the campus.
-        </p>
-        <p>
-            <strong>Link to the proposal in PDF:</strong>
-            <a href="MAC0499_Undergraduate_Thesis_Project_Proposal.pdf" target="_blank">View proposal</a>
-        </p>
-    </div>
+        <div class="section">
+            <h3>Project Proposal</h3>
+            <p>
+                <strong>Title:</strong> Interactive 2D Platform for Exploring the USP Campus
+            </p>
+            <p>
+                <strong>Abstract:</strong> This project aims to develop a 2D platform, similar to old-school Pokémon games, simulating the experience of a new student exploring the USP campus. The application will be interactive and educational, allowing the user to learn about the buildings, services, fun facts, and common paths around the campus.
+            </p>
+            <p>
+                <strong>Link to the proposal in PDF:</strong>
+                <a href="MAC0499_Undergraduate_Thesis_Project_Proposal.pdf" target="_blank">View proposal</a>
+            </p>
+        </div>
 
-    <div class="section">
-        <h3>Advisor</h3>
-        <p>Prof. Paulo Andre Vechiatto de Miranda</p>
-    </div>
+        <div class="section">
+            <h3>Advisor</h3>
+            <p>Prof. Paulo Andre Vechiatto de Miranda</p>
+        </div>
 
-    <div class="section">
-        <h3>Links and Materials</h3>
-        <ul>
-            <li><a href="https://play.unity.com/en/games/6fc66bd2-77e5-45d3-8fba-a317a2e76357/usp-odyssey-prototype-mobile" target="_blank">Game on Unity Play</a></li>
-            <li><a href="https://github.com/CaioGama00/MAC0499" target="_blank">GitHub</a></li>
-        </ul>
-    </div>
+        <div class="section">
+            <h3>Links and Materials</h3>
+            <ul>
+                <li><a href="https://play.unity.com/en/games/6fc66bd2-77e5-45d3-8fba-a317a2e76357/usp-odyssey-prototype-mobile" target="_blank">Game on Unity Play</a></li>
+                <li><a href="https://github.com/CaioGama00/MAC0499" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
 
-    <div class="section">
-        <p>
-            <a href="index.html" >Ver esta página em Português</a>
-        </p>
+        <div class="language-switch">
+            <p>
+                <a href="index.html">Ver esta página em Português</a>
+            </p>
+        </div>
     </div>
 </body>
 </html>
