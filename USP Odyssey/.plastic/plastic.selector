@@ -1,0 +1,3 @@
+repository "Cloud Repositories/USP Odyssey@4673957114077@cloud"
+  path "/"
+    smartbranch "/main"
