@@ -2,28 +2,46 @@ using UnityEngine;
 
 public class CameraFollow2D : MonoBehaviour
 {
-    public Transform player;  // Reference to the player's transform
-    public float smoothing = 5f;  // Speed of the camera smoothing
-    public Vector3 offset;  // Offset of the camera from the player
+    [SerializeField] private Transform target;
+    [SerializeField] private float defaultLerpSpeed = 5f;
+    [SerializeField] private float busSmoothTime = 0.2f;
+    [SerializeField] private Vector3 offset = new Vector3(0f, 0f, -10f);
 
-    void Start()
+    private bool useBusMode;
+    private Vector3 smoothVelocity;
+
+    private void Start()
     {
-        // Initialize the camera's offset from the player
-        if (player != null)
+        if (target != null)
         {
-            offset = transform.position - player.position;
+            offset = transform.position - target.position;
         }
     }
 
-    void FixedUpdate()
+    private void LateUpdate()
     {
-        if (player != null)
+        if (target == null)
         {
-            // Target position for the camera with the offset applied
-            Vector3 targetPosition = player.position + offset;
+            return;
+        }
 
-            // Smoothly move the camera towards the target position
-            transform.position = Vector3.Lerp(transform.position, targetPosition, smoothing * Time.deltaTime);
+        Vector3 desiredPosition = target.position + offset;
+        if (useBusMode)
+        {
+            transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref smoothVelocity, busSmoothTime);
+        }
+        else
+        {
+            transform.position = Vector3.Lerp(transform.position, desiredPosition, defaultLerpSpeed * Time.deltaTime);
         }
     }
+
+    public void SetTarget(Transform newTarget, bool busMode)
+    {
+        target = newTarget;
+        useBusMode = busMode;
+        smoothVelocity = Vector3.zero;
+    }
+
+    public Transform CurrentTarget => target;
 }

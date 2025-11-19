@@ -1,8 +1,8 @@
 using UnityEngine;
 
-/// <summary>
+
 /// Makes a GameObject gently bob up and down in place.
-/// </summary>
+
 public class ItemBobbing : MonoBehaviour
 {
     [Header("Bobbing Settings")]

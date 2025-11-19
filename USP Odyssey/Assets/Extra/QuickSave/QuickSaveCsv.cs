@@ -15,9 +15,9 @@ namespace CI.QuickSave
 {
     public class QuickSaveCsv
     {
-        /// <summary>
+        
         /// Returns the number of rows in the csv file
-        /// </summary>
+        
         public int RowCount => _values.Count;
 
         private readonly List<List<string>> _values;
@@ -32,9 +32,9 @@ namespace CI.QuickSave
             _values = new List<List<string>>();
         }
 
-        /// <summary>
+        
         /// Loads a csv file from the specified path
-        /// </summary>
+        
         /// <param name="path">The path to the file</param>
         /// <returns>A QuickSaveCsv object that represents the loaded csv file</returns>
         /// <exception cref="QuickSaveException"></exception>
@@ -71,9 +71,9 @@ namespace CI.QuickSave
             return new QuickSaveCsv(values);
         }
 
-        /// <summary>
+        
         /// Saves the QuickSaveCsv to a csv file
-        /// </summary>
+        
         /// <param name="path">The path to the file</param>
         /// <exception cref="QuickSaveException"></exception>
         public void Save(string path) 
@@ -86,9 +86,9 @@ namespace CI.QuickSave
             }
         }
 
-        /// <summary>
+        
         /// Gets the count of the cells in the specified row
-        /// </summary>
+        
         /// <param name="row">The zero based index of the row</param>
         /// <returns>Count of the cells in the row</returns>
         /// <exception cref="QuickSaveException"></exception>
@@ -102,9 +102,9 @@ namespace CI.QuickSave
             return _values[row].Count;
         }
 
-        /// <summary>
+        
         /// Gets value of the specified cell
-        /// </summary>
+        
         /// <param name="row">The zero based index of the row</param>
         /// <param name="column">The zero based index of the column</param>
         /// <returns>The value of the cell</returns>
@@ -119,9 +119,9 @@ namespace CI.QuickSave
             return _values[row][column];
         }
 
-        /// <summary>
+        
         /// Gets the value of the specified cell
-        /// </summary>
+        
         /// <typeparam name="T">The type to return the value as</typeparam>
         /// <param name="row">The zero based index of the row</param>
         /// <param name="column">The zero based index of the column</param>
@@ -137,9 +137,9 @@ namespace CI.QuickSave
             return (T)Convert.ChangeType(_values[row][column], typeof(T));
         }
 
-        /// <summary>
+        
         /// Sets the value of the specified cell
-        /// </summary>
+        
         /// <param name="row">The zero based index of the row</param>
         /// <param name="column">The zero based index of the column</param>
         /// <param name="value">The value to set</param>
@@ -164,18 +164,18 @@ namespace CI.QuickSave
             _values[row][column] = value;
         }
 
-        /// <summary>
+        
         /// Sets the value of the specified cell
-        /// </summary>
+        
         /// <typeparam name="T">The type of the value</typeparam>
         /// <param name="row">The zero based index of the row</param>
         /// <param name="column">The zero based index of the column</param>
         /// <param name="value">The value to set</param>
         public void SetCell<T>(int row, int column, T value) => SetCell(row, column, Convert.ToString(value));
 
-        /// <summary>
+        
         /// Deletes the specified row
-        /// </summary>
+        
         /// <param name="row">The zero based index of the row</param>
         public void DeleteRow(int row)
         {

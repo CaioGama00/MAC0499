@@ -19,9 +19,9 @@ namespace CI.QuickSave
             _settings = settings;
         }
 
-        /// <summary>
+        
         /// Creates a QuickSaveReader on the specified root
-        /// </summary>
+        
         /// <param name="root">The root to read from</param>
         /// <returns>A QuickSaveReader instance</returns>
         public static QuickSaveReader Create(string root)
@@ -29,9 +29,9 @@ namespace CI.QuickSave
             return Create(root, new QuickSaveSettings());
         }
 
-        /// <summary>
+        
         /// Creates a QuickSaveReader on the specified root using the specified settings
-        /// </summary>
+        
         /// <param name="root">The root to read from</param>
         /// <param name="settings">Settings</param>
         /// <returns>A QuickSaveReader instance</returns>
@@ -42,9 +42,9 @@ namespace CI.QuickSave
             return quickSaveReader;
         }
 
-        /// <summary>
+        
         /// Reads an object under the specified key
-        /// </summary>
+        
         /// <typeparam name="T">The type of object to read</typeparam>
         /// <param name="key">The key this object was saved under</param>
         /// <returns>The object that was loaded</returns>
@@ -65,9 +65,9 @@ namespace CI.QuickSave
             }
         }
 
-        /// <summary>
+        
         /// Reads an object under the specified key
-        /// </summary>
+        
         /// <typeparam name="T">The type of object to read</typeparam>
         /// <param name="key">The key this object was saved under</param>
         /// <param name="result">An action to be called when the read completes</param>
@@ -91,9 +91,9 @@ namespace CI.QuickSave
             return this;
         }
 
-        /// <summary>
+        
         /// Attempts to read an object under the specified key
-        /// </summary>
+        
         /// <typeparam name="T">The type of object to read</typeparam>
         /// <param name="key">The key this object was saved under</param>
         /// <param name="result">The object that was loaded</param>
@@ -119,9 +119,9 @@ namespace CI.QuickSave
             }
         }
 
-        /// <summary>
+        
         /// Reloads data from the root
-        /// </summary>
+        
         public void Reload()
         {
             Load(false);

@@ -18,9 +18,9 @@ namespace CI.QuickSave
             _settings = settings;
         }
 
-        /// <summary>
+        
         /// Creates a QuickSaveWriter on the specified root
-        /// </summary>
+        
         /// <param name="root">The root to write to</param>
         /// <returns>A QuickSaveWriter instance</returns>
         public static QuickSaveWriter Create(string root)
@@ -28,9 +28,9 @@ namespace CI.QuickSave
             return Create(root, new QuickSaveSettings());
         }
 
-        /// <summary>
+        
         /// Creates a QuickSaveWriter on the specified root using the specified settings
-        /// </summary>
+        
         /// <param name="root">The root to write to</param>
         /// <param name="settings">Settings</param>
         /// <returns>A QuickSaveWriter instance</returns>
@@ -41,9 +41,9 @@ namespace CI.QuickSave
             return quickSaveWriter;
         }
 
-        /// <summary>
+        
         /// Writes an object to the specified key - you must called commit to write the data to file
-        /// </summary>
+        
         /// <typeparam name="T">The type of object to write</typeparam>
         /// <param name="key">The key this object will be saved under</param>
         /// <param name="value">The object to save</param>
@@ -60,9 +60,9 @@ namespace CI.QuickSave
             return this;
         }
 
-        /// <summary>
+        
         /// Deletes the specified key if it exists
-        /// </summary>
+        
         /// <param name="key">The key to delete</param>
         public void Delete(string key)
         {
@@ -72,17 +72,17 @@ namespace CI.QuickSave
             }
         }
 
-        /// <summary>
+        
         /// Commits the changes to file
-        /// </summary>
+        
         public void Commit()
         {
             Save();
         }
 
-        /// <summary>
+        
         /// Attempts to commit the changes to file
-        /// </summary>
+        
         /// <returns>Was the commit successful</returns>
         public bool TryCommit()
         {

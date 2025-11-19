@@ -35,9 +35,18 @@ public class BusMovement : MonoBehaviour
     private Vector3 direction;
     private int finalStopIndex = -1; // Index of the final stop waypoint
     private bool routeReady;
+    private Rigidbody2D body;
 
     void Start()
     {
+        body = GetComponent<Rigidbody2D>();
+        if (body != null)
+        {
+            body.bodyType = RigidbodyType2D.Kinematic;
+            body.linearVelocity = Vector2.zero;
+            body.angularVelocity = 0f;
+        }
+
         routeReady = ValidateRoute();
         if (!routeReady || !TryGetCurrentWaypoint(out Transform startingWaypoint))
         {
@@ -171,6 +180,10 @@ public class BusMovement : MonoBehaviour
     }
     void OnDrawGizmos()
     {
+        if (!Application.isPlaying || Camera.current == null)
+        {
+            return;
+        }
         if (busLine != null && busLine.waypoints != null && busLine.waypoints.Count > 1)
         {
             Gizmos.color = busLine.lineColor;
@@ -211,7 +224,7 @@ public class BusMovement : MonoBehaviour
         }
     }
 
-// Function to draw a smooth circle
+    // Function to draw a smooth circle
     void DrawGizmoCircle(Vector3 center)
     {   
         float circleSize = 7.0f;

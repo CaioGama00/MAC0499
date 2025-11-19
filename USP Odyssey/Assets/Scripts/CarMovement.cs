@@ -3,11 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CarMovement : MonoBehaviour
-{   
-    public  float driftFactor = 0.95f;
-    public float accelerationFactor = 30.0f;
-    public float turnFactor = 3.5f;
-    public float maxSpeed = 20;
+{
+    [Header("Handling")]
+    [SerializeField] private float driftFactor = 0.92f;
+    [SerializeField] private float traction = 0.85f;
+    [SerializeField] private float turnFactor = 4.25f;
+    [SerializeField] private float minTurnSpeed = 6f;
+    [SerializeField] private float turnResponsiveness = 0.35f;
+    [SerializeField] private float stationaryTurnThreshold = 0.5f;
+
+    [Header("Power")]
+    [SerializeField] private float forwardAcceleration = 100f;
+    [SerializeField] private float reverseAcceleration = 80f;
+    [SerializeField] private float maxSpeed = 100f;
+    [SerializeField] private float brakingDrag = 3f;
+    [SerializeField] private float coastingDrag = 1.2f;
 
     float accelerationInput = 0;
     float steeringInput = 0;
@@ -30,32 +40,43 @@ public class CarMovement : MonoBehaviour
     }
 
     void ApplyEngineForce()
-    {   
+    {
         velocityVsUp = Vector2.Dot(transform.up, carRigidbody2d.linearVelocity);
 
-        if (velocityVsUp > maxSpeed && accelerationInput > 0)
-            return;
+        if (velocityVsUp > maxSpeed && accelerationInput > 0f)
+        {
+            accelerationInput = 0f;
+        }
+        else if (velocityVsUp < -maxSpeed * 0.4f && accelerationInput < 0f)
+        {
+            accelerationInput = 0f;
+        }
 
-        if (velocityVsUp < -maxSpeed * 0.5f && accelerationInput < 0)
-            return;
+        float targetDrag = Mathf.Abs(accelerationInput) > 0.01f ? 0f : coastingDrag;
+        if (Mathf.Sign(accelerationInput) != Mathf.Sign(velocityVsUp) && Mathf.Abs(velocityVsUp) > 1f)
+        {
+            targetDrag = brakingDrag;
+        }
 
-        if (carRigidbody2d.linearVelocity.sqrMagnitude > maxSpeed * maxSpeed && accelerationInput > 0)
-            return;
+        carRigidbody2d.linearDamping = Mathf.Lerp(carRigidbody2d.linearDamping, targetDrag, Time.fixedDeltaTime * 5f);
 
-        if (accelerationInput == 0)
-            carRigidbody2d.linearDamping = Mathf.Lerp(carRigidbody2d.linearDamping, 3.0f, Time.fixedDeltaTime * 3);
-        else carRigidbody2d.linearDamping = 0;
-
-        Vector2 engineForceVector = transform.up * accelerationInput *accelerationFactor;
+        float currentAcceleration = accelerationInput >= 0f ? forwardAcceleration : reverseAcceleration;
+        Vector2 engineForceVector = transform.up * accelerationInput * currentAcceleration;
         carRigidbody2d.AddForce(engineForceVector, ForceMode2D.Force);
     }
 
     void ApplySteering()
-    {   
-        float minSpeedBeforeAllowTurningFactor = carRigidbody2d.linearVelocity.magnitude / 8;
-        minSpeedBeforeAllowTurningFactor = Mathf.Clamp01(minSpeedBeforeAllowTurningFactor);
+    {
+        float speed = carRigidbody2d.linearVelocity.magnitude;
+        if (speed < stationaryTurnThreshold && Mathf.Abs(accelerationInput) < 0.05f)
+        {
+            return;
+        }
 
-        rotationAngle -= steeringInput * turnFactor * minSpeedBeforeAllowTurningFactor;
+        float speedFactor = Mathf.InverseLerp(stationaryTurnThreshold, minTurnSpeed, speed);
+        float baseResponsiveness = Mathf.Lerp(turnResponsiveness, 1f, speedFactor);
+
+        rotationAngle -= steeringInput * turnFactor * baseResponsiveness;
         carRigidbody2d.MoveRotation(rotationAngle);
     }
 
@@ -65,10 +86,14 @@ public class CarMovement : MonoBehaviour
         Vector2 rightVelocity = transform.right * Vector2.Dot(carRigidbody2d.linearVelocity, transform.right);
 
         carRigidbody2d.linearVelocity = forwardVelocity + rightVelocity * driftFactor;
+
+        Vector2 desiredVelocity = forwardVelocity + rightVelocity * traction;
+        carRigidbody2d.linearVelocity = Vector2.Lerp(carRigidbody2d.linearVelocity, desiredVelocity, Time.fixedDeltaTime * 5f);
     }
     public void SetInputVector(Vector2 inputVector)
-    {   
+    {
         steeringInput = inputVector.x;
-        accelerationInput = inputVector.y;
+        accelerationInput = Mathf.Clamp(inputVector.y, -1f, 1f);
     }
+
 }

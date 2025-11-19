@@ -5,16 +5,101 @@ using System.Threading.Tasks;
 
 public static class SaveManager
 {
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private const string WebGLPlayerPrefsKey = "SaveManager_SaveData";
+#else
     private static readonly string saveFilePath = Path.Combine(Application.persistentDataPath, "savedata.json");
     private static readonly string tempFilePath = saveFilePath + ".tmp";
     private static readonly string backupFilePath = saveFilePath + ".bak";
+#endif
 
     public static bool SaveGame(PlayerData data)
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return SaveGameToPlayerPrefs(data);
+#else
         return SaveGameAsync(data).GetAwaiter().GetResult();
+#endif
     }
 
-    public static async Task<bool> SaveGameAsync(PlayerData data)
+    public static Task<bool> SaveGameAsync(PlayerData data)
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        bool result = SaveGameToPlayerPrefs(data);
+        return Task.FromResult(result);
+#else
+        return SaveGameFileAsync(data);
+#endif
+    }
+
+    public static PlayerData LoadGame()
+    {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        return LoadGameFromPlayerPrefs();
+#else
+        return LoadGameFromFiles();
+#endif
+    }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    private static bool SaveGameToPlayerPrefs(PlayerData data)
+    {
+        if (data == null)
+        {
+            Debug.LogWarning("Attempted to save null player data.");
+            return false;
+        }
+
+        try
+        {
+            string json = JsonUtility.ToJson(data, true);
+            PlayerPrefs.SetString(WebGLPlayerPrefsKey, json);
+            PlayerPrefs.Save();
+            Debug.Log("Game data saved via PlayerPrefs (WebGL).");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to save game data via PlayerPrefs: {ex.Message}");
+            return false;
+        }
+    }
+
+    private static PlayerData LoadGameFromPlayerPrefs()
+    {
+        if (!PlayerPrefs.HasKey(WebGLPlayerPrefsKey))
+        {
+            Debug.LogWarning("No PlayerPrefs save data found (WebGL).");
+            return null;
+        }
+
+        string json = PlayerPrefs.GetString(WebGLPlayerPrefsKey, string.Empty);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            Debug.LogWarning("Stored PlayerPrefs save data is empty (WebGL).");
+            return null;
+        }
+
+        try
+        {
+            PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+            if (data == null)
+            {
+                Debug.LogWarning("Unable to deserialize PlayerPrefs save data (WebGL).");
+                return null;
+            }
+
+            Debug.Log("Game data loaded via PlayerPrefs (WebGL).");
+            return data;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to parse PlayerPrefs save data (WebGL): {ex.Message}");
+            return null;
+        }
+    }
+#else
+    private static async Task<bool> SaveGameFileAsync(PlayerData data)
     {
         try
         {
@@ -64,7 +149,7 @@ public static class SaveManager
         }
     }
 
-    public static PlayerData LoadGame()
+    private static PlayerData LoadGameFromFiles()
     {
         try
         {
@@ -122,4 +207,5 @@ public static class SaveManager
             return false;
         }
     }
+#endif
 }

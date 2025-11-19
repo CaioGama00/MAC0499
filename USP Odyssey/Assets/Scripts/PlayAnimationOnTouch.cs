@@ -9,8 +9,6 @@ public class PlayAnimationOnTouch : MonoBehaviour
     [SerializeField] private GameObject playerImage;
     [SerializeField] private GameObject player;
     [SerializeField] private string triggerName = "StartAnimation";
-    [SerializeField] private GameObject[] additionalUIToEnable;
-
     private bool animationTriggered;
 
     private void Start()
@@ -50,7 +48,7 @@ public class PlayAnimationOnTouch : MonoBehaviour
         {
             movementJoystickPanel.SetActive(true);
         }
-        EnableAdditionalUI();
+
         if (animator != null)
         {
             animator.ResetTrigger(triggerName);
@@ -63,26 +61,8 @@ public class PlayAnimationOnTouch : MonoBehaviour
         }
     }
 
-    private void EnableAdditionalUI()
-    {
-        if (additionalUIToEnable == null)
-        {
-            return;
-        }
-
-        for (int i = 0; i < additionalUIToEnable.Length; i++)
-        {
-            GameObject target = additionalUIToEnable[i];
-            if (target != null)
-            {
-                target.SetActive(true);
-            }
-        }
-    }
-
     private IEnumerator HideOverlayWhenAnimationFinishes()
     {
-        // Allow the animator to enter the requested state this frame
         yield return null;
 
         if (animator == null)
@@ -121,5 +101,8 @@ public class PlayAnimationOnTouch : MonoBehaviour
         {
             circleImage.SetActive(false);
         }
+
+        RegionZone.EnableRegions();
     }
+
 }

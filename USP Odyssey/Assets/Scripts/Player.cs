@@ -86,8 +86,7 @@ public class Player : MonoBehaviour
 
         if (mainCamera != null)
         {
-            mainCamera.transform.position = transform.position;
-            mainCamera.player = transform;
+            mainCamera.SetTarget(transform, false);
         }
     }
 
@@ -106,9 +105,23 @@ public class Player : MonoBehaviour
         movement.SetSpawnPoint(newSpawnPoint);
     }
 
+    public void TeleportTo(Vector3 destination)
+    {
+        movement.WarpTo(destination);
+        if (mainCamera != null)
+        {
+            mainCamera.SetTarget(transform, false);
+        }
+    }
+
     public bool InBus()
     {
         return vehicleController.IsInBus;
+    }
+
+    public bool InVehicle()
+    {
+        return vehicleController.IsInBus || vehicleController.IsInCar;
     }
 
     public void ButtonPressed()

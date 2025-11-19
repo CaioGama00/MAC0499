@@ -26,7 +26,7 @@ public class CarController : MonoBehaviour
 
         Vector2 inputVector = Vector2.zero;
 
-        // 🔹 1. Touch or joystick input (for phones)
+        //  1. Touch or joystick input (for phones)
         if (movementJoystick != null && 
             (movementJoystick.joystickVec.x != 0 || movementJoystick.joystickVec.y != 0))
         {
@@ -34,7 +34,7 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            // 🔹 2. Keyboard input (for PC)
+            //  2. Keyboard input (for PC)
             float horizontal = Input.GetAxisRaw("Horizontal"); // A/D or Left/Right
             float vertical = Input.GetAxisRaw("Vertical");     // W/S or Up/Down
             inputVector = new Vector2(horizontal, vertical);

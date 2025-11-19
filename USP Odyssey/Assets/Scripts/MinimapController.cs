@@ -6,27 +6,34 @@ public class MinimapController : MonoBehaviour
     [Header("Minimap Settings")]
     public RawImage minimapImage;
     public RawImage largeMapImage;
-    public RectTransform playerMarker;
+    [Tooltip("Root object that wraps the entire large map (optional).")]
+    public GameObject largeMapRoot;
     public RectTransform largeMapPlayerMarker;
     public Button minimapButton;
 
     [Header("Map Settings")]
     public Transform playerTransform;
+    [Tooltip("Renderer that covers the playable area. Leave null if you prefer to specify world bounds manually.")]
     public Renderer mapRenderer; // The Renderer of your game's ground/background sprite
+    [Tooltip("Optional transforms marking the bottom-left and top-right corners of the world bounds.")]
+    public Transform worldBottomLeft;
+    public Transform worldTopRight;
     [Tooltip("Use XZ for 3D worlds, XY for 2D top-down maps.")]
     public bool useXZPlane = true;
 
     [Header("UI Elements to Disable")]
     public GameObject pauseButton;
     public GameObject movementJoystick;
+    public GameObject collectiblesMenuButton;
 
     private bool isLargeMapActive = false;
 
     void Start()
     {
-        if (largeMapImage != null)
+        GameObject root = ResolveLargeMapRoot();
+        if (root != null)
         {
-            largeMapImage.gameObject.SetActive(false);
+            root.SetActive(false);
         }
 
         if (minimapButton != null)
@@ -44,9 +51,10 @@ public class MinimapController : MonoBehaviour
     {
         isLargeMapActive = !isLargeMapActive;
 
-        if (largeMapImage != null)
+        GameObject root = ResolveLargeMapRoot();
+        if (root != null)
         {
-            largeMapImage.gameObject.SetActive(isLargeMapActive);
+            root.SetActive(isLargeMapActive);
         }
 
         if (pauseButton != null)
@@ -58,6 +66,11 @@ public class MinimapController : MonoBehaviour
         {
             movementJoystick.SetActive(!isLargeMapActive);
         }
+
+        if (collectiblesMenuButton != null)
+        {
+            collectiblesMenuButton.SetActive(!isLargeMapActive);
+        }
     }
 
     void UpdatePlayerMarker()
@@ -66,8 +79,6 @@ public class MinimapController : MonoBehaviour
         {
             return;
         }
-
-        SetMarkerPosition(playerMarker, minimapImage, normalizedPosition);
         SetMarkerPosition(largeMapPlayerMarker, largeMapImage, normalizedPosition);
     }
 
@@ -75,25 +86,41 @@ public class MinimapController : MonoBehaviour
     {
         normalizedPosition = Vector2.zero;
 
-        if (playerTransform == null || mapRenderer == null)
+        if (playerTransform == null)
         {
             return false;
         }
 
-        Bounds mapBounds = mapRenderer.bounds;
-        float width = mapBounds.size.x;
-        float depthOrHeight = useXZPlane ? mapBounds.size.z : mapBounds.size.y;
-
-        if (width <= Mathf.Epsilon || depthOrHeight <= Mathf.Epsilon)
+        Vector3 min, max;
+        if (worldBottomLeft != null && worldTopRight != null)
+        {
+            min = worldBottomLeft.position;
+            max = worldTopRight.position;
+        }
+        else if (mapRenderer != null)
+        {
+            Bounds mapBounds = mapRenderer.bounds;
+            min = mapBounds.min;
+            max = mapBounds.max;
+        }
+        else
         {
             return false;
         }
 
-        float normalizedX = Mathf.InverseLerp(mapBounds.min.x, mapBounds.max.x, playerTransform.position.x);
+        float worldWidth = Mathf.Abs(max.x - min.x);
+        float worldHeight = useXZPlane ? Mathf.Abs(max.z - min.z) : Mathf.Abs(max.y - min.y);
+
+        if (worldWidth <= Mathf.Epsilon || worldHeight <= Mathf.Epsilon)
+        {
+            return false;
+        }
+
+        float normalizedX = Mathf.InverseLerp(min.x, max.x, playerTransform.position.x);
         float playerVertical = useXZPlane ? playerTransform.position.z : playerTransform.position.y;
         float normalizedY = useXZPlane
-            ? Mathf.InverseLerp(mapBounds.min.z, mapBounds.max.z, playerVertical)
-            : Mathf.InverseLerp(mapBounds.min.y, mapBounds.max.y, playerVertical);
+            ? Mathf.InverseLerp(min.z, max.z, playerVertical)
+            : Mathf.InverseLerp(min.y, max.y, playerVertical);
 
         normalizedPosition = new Vector2(Mathf.Clamp01(normalizedX), Mathf.Clamp01(normalizedY));
         return true;
@@ -106,14 +133,33 @@ public class MinimapController : MonoBehaviour
             return;
         }
 
-        Rect rect = targetImage.rectTransform.rect;
+        RectTransform targetRect = targetImage.rectTransform;
+        Rect rect = targetRect.rect;
 
-        // Anchor zero is at the center for typical minimap setups, so offset by half the rect.
-        Vector2 anchoredPosition = new Vector2(
-            (normalizedPosition.x - 0.5f) * rect.width,
-            (normalizedPosition.y - 0.5f) * rect.height
+        Vector2 localPoint = new Vector2(
+            Mathf.Lerp(rect.xMin, rect.xMax, normalizedPosition.x),
+            Mathf.Lerp(rect.yMin, rect.yMax, normalizedPosition.y)
         );
 
-        marker.anchoredPosition = anchoredPosition;
+        Vector3 worldPoint = targetRect.TransformPoint(localPoint);
+        if (marker.parent is RectTransform parentRect)
+        {
+            Vector3 parentSpace = parentRect.InverseTransformPoint(worldPoint);
+            marker.anchoredPosition = new Vector2(parentSpace.x, parentSpace.y);
+        }
+        else
+        {
+            marker.position = worldPoint;
+        }
+    }
+
+    private GameObject ResolveLargeMapRoot()
+    {
+        if (largeMapRoot != null)
+        {
+            return largeMapRoot;
+        }
+
+        return largeMapImage != null ? largeMapImage.gameObject : null;
     }
 }

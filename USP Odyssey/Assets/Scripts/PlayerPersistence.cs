@@ -76,6 +76,7 @@ public class PlayerPersistence : MonoBehaviour
                 ? new List<string>(data.collectedCollectibleIds)
                 : new List<string>();
             Debug.Log("Game Loaded!");
+            ImportLegacyCollectiblesFromPrefs();
             ApplyCollectedCollectibles();
         }
         else
@@ -85,6 +86,8 @@ public class PlayerPersistence : MonoBehaviour
             playerName = defaultPlayerName;
             collectedCollectibleIds = new List<string>();
             Debug.Log("No save file found. Starting new game.");
+            ImportLegacyCollectiblesFromPrefs();
+            ApplyCollectedCollectibles();
         }
     }
 
@@ -160,6 +163,32 @@ public class PlayerPersistence : MonoBehaviour
             {
                 collectible.gameObject.SetActive(false);
             }
+        }
+    }
+
+    private void ImportLegacyCollectiblesFromPrefs()
+    {
+        Collectible[] allCollectibles = FindObjectsByType<Collectible>(FindObjectsSortMode.None);
+        bool addedAny = false;
+
+        foreach (Collectible collectible in allCollectibles)
+        {
+            if (collectible == null || string.IsNullOrEmpty(collectible.collectibleId))
+            {
+                continue;
+            }
+
+            string legacyKey = "Collectible_" + collectible.collectibleId;
+            if (PlayerPrefs.GetInt(legacyKey, 0) == 1 && !collectedCollectibleIds.Contains(collectible.collectibleId))
+            {
+                collectedCollectibleIds.Add(collectible.collectibleId);
+                addedAny = true;
+            }
+        }
+
+        if (addedAny)
+        {
+            RequestSave();
         }
     }
 

@@ -6,11 +6,13 @@ public class DisableImagesOnSize : MonoBehaviour
     public GameObject blackImage;  // Reference to the black image GameObject
     public GameObject pauseButton;
     public GameObject minimapButton;
+    public GameObject collectibleMenuButton;
     private int count;
     private RectTransform circleRect;
 
     void Start(){
         circleRect = circleImage.GetComponent<RectTransform>();
+        SetMenuButtonsActive(false);
     }
     void Update()
     {   count++;
@@ -24,8 +26,7 @@ public class DisableImagesOnSize : MonoBehaviour
             // Disable the circle image and black image
             circleImage.SetActive(false);
             blackImage.SetActive(false);
-            pauseButton.SetActive(true);
-            minimapButton.SetActive(true);
+            SetMenuButtonsActive(true);
 
             enabled = false;
         }
@@ -33,5 +34,23 @@ public class DisableImagesOnSize : MonoBehaviour
     void turnOn(){
         circleImage.SetActive(false);
         circleImage.SetActive(true);
+    }
+
+    private void SetMenuButtonsActive(bool state)
+    {
+        if (pauseButton != null)
+        {
+            pauseButton.SetActive(state);
+        }
+
+        if (minimapButton != null)
+        {
+            minimapButton.SetActive(state);
+        }
+
+        if (collectibleMenuButton != null)
+        {
+            collectibleMenuButton.SetActive(state);
+        }
     }
 }

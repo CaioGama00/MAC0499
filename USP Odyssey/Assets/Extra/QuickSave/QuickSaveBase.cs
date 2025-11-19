@@ -22,29 +22,29 @@ namespace CI.QuickSave
         protected string _root;
         protected QuickSaveSettings _settings;
 
-        /// <summary>
+        
         /// Determines whether the specified root exists
-        /// </summary>
+        
         /// <param name="root">The root to check</param>
         /// <returns>Does the root exist</returns>
         public static bool RootExists(string root) => FileAccess.Exists(FileAccess.GetPathFromBase(root));
 
-        /// <summary>
+        
         /// Deletes the specified root if it exists
-        /// </summary>
+        
         /// <param name="root">The root to delete</param>
         public static void DeleteRoot(string root) => FileAccess.Delete(FileAccess.GetPathFromBase(root));
 
-        /// <summary>
+        
         /// Determines if the specified key exists
-        /// </summary>
+        
         /// <param name="key">The key to look for</param>
         /// <returns>Does the key exist</returns>
         public bool Exists(string key) => _items[key] != null;
 
-        /// <summary>
+        
         /// Gets the names of all the keys under this root
-        /// </summary>
+        
         /// <returns>A collection of key names</returns>
         public IEnumerable<string> GetAllKeys() => _items.Properties().Select(x => x.Name).ToList();
 

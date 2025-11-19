@@ -18,6 +18,7 @@ public class PlayerVehicleController : MonoBehaviour
     private GameObject enterCarPanel;
     private GameObject enterBusPanel;
     private GameObject miniMap;
+    [SerializeField] private GameObject collectibleMenuButton;
     private GameObject[] invisibleWalls;
     private AudioSource buttonClickSound;
     private AudioSource panelSound;
@@ -26,11 +27,17 @@ public class PlayerVehicleController : MonoBehaviour
 
     private SpriteRenderer[] spriteRenderers;
     private Collider2D[] playerColliders;
+    private Transform defaultParent;
+    [SerializeField] private Vector3 carSeatLocalOffset = Vector3.zero;
+    [SerializeField] private Vector3 busSeatLocalOffset = Vector3.zero;
+    private Collider2D[] cachedCarColliders = Array.Empty<Collider2D>();
+    private Collider2D[] cachedBusColliders = Array.Empty<Collider2D>();
 
     private bool recentlyExited;
     private bool exitButtonPressed;
     private bool isInCar;
     private bool isInBus;
+    private Transform activeVehicleTransform;
 
     private CarMovement carMovement;
     private CarMovement cachedCarMovement;
@@ -44,6 +51,25 @@ public class PlayerVehicleController : MonoBehaviour
     private Coroutine exitCooldownRoutine;
 
     public bool IsInBus => isInBus;
+    public bool IsInCar => isInCar;
+
+    public bool IsPlayerControllingVehicle(out Transform vehicleTransform)
+    {
+        if (isInCar && carMovement != null)
+        {
+            vehicleTransform = carMovement.transform;
+            return true;
+        }
+
+        if (isInBus && busMovement != null)
+        {
+            vehicleTransform = busMovement.transform;
+            return true;
+        }
+
+        vehicleTransform = null;
+        return false;
+    }
 
     public void Configure(
         PlayerMovement playerMovement,
@@ -97,6 +123,14 @@ public class PlayerVehicleController : MonoBehaviour
     {
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
         playerColliders = GetComponentsInChildren<Collider2D>(true);
+        defaultParent = transform.parent;
+    }
+
+    private void Start()
+    {
+        SetActiveVehicleTransform(null, busMode: false);
+        SetCollectibleMenuButtonActive(true);
+        SetPlayerVisualsActive(true);
     }
 
     private void OnDisable()
@@ -105,6 +139,10 @@ public class PlayerVehicleController : MonoBehaviour
         {
             busMovement.FinalStopReached -= OnBusFinalStopReached;
         }
+
+        SetActiveVehicleTransform(null, busMode: false);
+        SetCollectibleMenuButtonActive(true);
+        SetPlayerVisualsActive(true);
     }
 
     private void Update()
@@ -263,6 +301,56 @@ public class PlayerVehicleController : MonoBehaviour
         carMovement = null;
     }
 
+    public bool ControlsCollider(Collider2D collider)
+    {
+        if (collider == null)
+        {
+            return false;
+        }
+
+        if (ContainsCollider(playerColliders, collider))
+        {
+            return true;
+        }
+
+        if (isInCar && ContainsCollider(cachedCarColliders, collider))
+        {
+            return true;
+        }
+
+        if (isInBus && ContainsCollider(cachedBusColliders, collider))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool IsAnyControlledColliderTouching(Collider2D zone)
+    {
+        if (zone == null)
+        {
+            return false;
+        }
+
+        if (DoesAnyColliderTouchZone(playerColliders, zone))
+        {
+            return true;
+        }
+
+        if (isInCar && DoesAnyColliderTouchZone(cachedCarColliders, zone))
+        {
+            return true;
+        }
+
+        if (isInBus && DoesAnyColliderTouchZone(cachedBusColliders, zone))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private void HandleInteractRequest()
     {
         if (isInCar)
@@ -309,19 +397,19 @@ public class PlayerVehicleController : MonoBehaviour
             return;
         }
 
+        CacheBusReferences();
         ResetInputState();
         exitButtonPressed = false;
         isInBus = true;
-        transform.position = busMovement.transform.position;
-        if (mainCamera != null)
-        {
-            mainCamera.player = busMovement.transform;
-        }
+        AttachPlayerToVehicle(busMovement.transform, busSeatLocalOffset);
+        SetPlayerVisualsActive(false);
+        SetCollectibleMenuButtonActive(false);
+        SetActiveVehicleTransform(busMovement.transform, busMode: true);
         if (playerCamera != null)
         {
             playerCamera.orthographicSize = 20f;
         }
-        SetPlayerVisualsActive(false);
+        miniMap?.SetActive(true);
         movement?.SetMovementLocked(true);
         movementJoystickPanel?.SetActive(false);
         inBusPanel?.SetActive(true);
@@ -343,12 +431,11 @@ public class PlayerVehicleController : MonoBehaviour
 
         ResetInputState();
         Vector3 exitOffset = busMovement.currentDirection() * busMovement.speed;
-        transform.position = busMovement.transform.position + exitOffset;
+        Vector3 exitPosition = busMovement.transform.position + exitOffset;
+        DetachPlayerFromVehicle(exitPosition);
         SetPlayerVisualsActive(true);
-        if (mainCamera != null)
-        {
-            mainCamera.player = transform;
-        }
+        SetCollectibleMenuButtonActive(true);
+        SetActiveVehicleTransform(null, busMode: false);
         if (playerCamera != null)
         {
             playerCamera.orthographicSize = 12f;
@@ -363,6 +450,7 @@ public class PlayerVehicleController : MonoBehaviour
         Debug.Log("Exited the bus");
         recentlyExited = true;
         StartExitCooldown();
+        cachedBusColliders = Array.Empty<Collider2D>();
         if (busMovement != null)
         {
             busMovement.FinalStopReached -= OnBusFinalStopReached;
@@ -384,17 +472,15 @@ public class PlayerVehicleController : MonoBehaviour
         carMovement.SetInputVector(Vector2.zero);
         carMovement.enabled = true;
         isInCar = true;
-        transform.position = carMovement.transform.position;
-        if (mainCamera != null)
-        {
-            mainCamera.player = carMovement.transform;
-        }
+        AttachPlayerToVehicle(carMovement.transform, carSeatLocalOffset);
+        SetPlayerVisualsActive(false);
+        SetCollectibleMenuButtonActive(false);
+        SetActiveVehicleTransform(carMovement.transform, busMode: false);
         if (playerCamera != null)
         {
             playerCamera.orthographicSize = 20f;
         }
-        miniMap?.SetActive(false);
-        SetPlayerVisualsActive(false);
+        miniMap?.SetActive(true);
         movement?.SetMovementLocked(true);
         Debug.Log("Entered the car");
         UpdateInvisibleWalls(true);
@@ -420,15 +506,13 @@ public class PlayerVehicleController : MonoBehaviour
         Vector3 exitPosition = carTransform != null
             ? carTransform.position + exitOffsetVector
             : transform.position + exitOffsetVector;
-        transform.position = exitPosition;
-
+        DetachPlayerFromVehicle(exitPosition);
         SetPlayerVisualsActive(true);
-        movementJoystickPanel?.SetActive(true);
+        SetCollectibleMenuButtonActive(true);
 
-        if (mainCamera != null)
-        {
-            mainCamera.player = transform;
-        }
+        movementJoystickPanel?.SetActive(true);
+        SetActiveVehicleTransform(null, busMode: false);
+
         miniMap?.SetActive(true);
         if (playerCamera != null)
         {
@@ -462,6 +546,7 @@ public class PlayerVehicleController : MonoBehaviour
         cachedCarTransform = null;
         cachedCarBody = null;
         cachedCarAudioSources = Array.Empty<AudioSource>();
+        SetActiveVehicleTransform(null, busMode: false);
     }
 
     private void StartExitCooldown()
@@ -522,12 +607,62 @@ public class PlayerVehicleController : MonoBehaviour
             cachedCarTransform = null;
             cachedCarBody = null;
             cachedCarAudioSources = Array.Empty<AudioSource>();
+            cachedCarColliders = Array.Empty<Collider2D>();
             return;
         }
 
         cachedCarTransform = carMovement.transform;
         cachedCarBody = carMovement.GetComponent<Rigidbody2D>();
         cachedCarAudioSources = carMovement.GetComponents<AudioSource>() ?? Array.Empty<AudioSource>();
+        cachedCarColliders = carMovement.GetComponentsInChildren<Collider2D>(true) ?? Array.Empty<Collider2D>();
+    }
+
+    private void CacheBusReferences()
+    {
+        if (busMovement == null)
+        {
+            cachedBusColliders = Array.Empty<Collider2D>();
+            return;
+        }
+
+        cachedBusColliders = busMovement.GetComponentsInChildren<Collider2D>(true) ?? Array.Empty<Collider2D>();
+    }
+
+    private static bool ContainsCollider(Collider2D[] colliders, Collider2D candidate)
+    {
+        if (colliders == null || candidate == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i] == candidate)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool DoesAnyColliderTouchZone(Collider2D[] colliders, Collider2D zone)
+    {
+        if (colliders == null || zone == null)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            Collider2D candidate = colliders[i];
+            if (candidate != null && candidate.enabled && zone.IsTouching(candidate))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void SetPlayerVisualsActive(bool isActive)
@@ -542,16 +677,51 @@ public class PlayerVehicleController : MonoBehaviour
                 }
             }
         }
+    }
 
-        if (playerColliders != null)
+    private void AttachPlayerToVehicle(Transform parentTransform, Vector3 localOffset)
+    {
+        if (parentTransform == null)
         {
-            for (int i = 0; i < playerColliders.Length; i++)
-            {
-                if (playerColliders[i] != null)
-                {
-                    playerColliders[i].enabled = isActive;
-                }
-            }
+            return;
+        }
+
+        transform.SetParent(parentTransform);
+        transform.localPosition = localOffset;
+        transform.localRotation = Quaternion.identity;
+    }
+
+    private void DetachPlayerFromVehicle(Vector3 worldPosition)
+    {
+        transform.SetParent(defaultParent);
+        transform.position = worldPosition;
+        transform.rotation = Quaternion.identity;
+    }
+
+    private void SetActiveVehicleTransform(Transform vehicleTransform, bool busMode)
+    {
+        activeVehicleTransform = vehicleTransform;
+        Transform followTarget = vehicleTransform != null ? vehicleTransform : transform;
+
+        if (mainCamera != null)
+        {
+            mainCamera.SetTarget(followTarget, busMode);
+        }
+
+        MinimapController minimap = FindFirstObjectByType<MinimapController>();
+        if (minimap != null)
+        {
+            minimap.playerTransform = followTarget;
+        }
+
+        BusActivator.SetGlobalTrackingTarget(followTarget);
+    }
+
+    private void SetCollectibleMenuButtonActive(bool state)
+    {
+        if (collectibleMenuButton != null)
+        {
+            collectibleMenuButton.SetActive(state);
         }
     }
 
