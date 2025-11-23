@@ -24,7 +24,7 @@
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             padding: 40px;
-            max-width: 900px;
+            max-width: 1100px;
             width: 100%;
             margin-top: 30px;
             margin-bottom: 30px;
@@ -106,20 +106,112 @@
             padding-top: 20px;
             border-top: 1px solid #bbdefb;
         }
+
+        .hero-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        .hero-logo img {
+            width: min(340px, 80vw);
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15));
+        }
+
+        .gallery {
+            margin-top: 30px;
+        }
+
+        .gallery-intro {
+            text-align: center;
+            color: #455a64;
+            margin-bottom: 18px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .shot-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #e3f2fd;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shot-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(26, 35, 126, 0.16);
+        }
+
+        .shot-card img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            display: block;
+        }
+
+        .shot-card .tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a237e;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.85em;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        .shot-card figcaption {
+            color: #1a237e;
+            background: #ffffff;
+            padding: 12px 14px 14px;
+            border-top: 1px solid #e3f2fd;
+        }
+
+        .shot-card figcaption strong {
+            color: #1a237e;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .shot-card figcaption small {
+            display: block;
+            color: #455a64;
+            line-height: 1.4;
+        }
+
+        .gallery-tip {
+            margin-top: 12px;
+            text-align: center;
+            color: #546e7a;
+            font-size: 0.95em;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Undergraduate Thesis</h1>
         <h2>Caio Rodrigues Gama</h2>
+        <div class="hero-logo">
+            <img src="USP Odyssey/Assets/Resources/Logos/game_logo.png" alt="USP Odyssey logo">
+        </div>
 
         <div class="section">
             <h3>Project Proposal</h3>
             <p>
-                <strong>Title:</strong> Interactive 2D Platform for Exploring the USP Campus
+                <strong>Title:</strong> USP Odyssey: Gamification and Exploration for Student Engagement on the University Campus
             </p>
             <p>
-                <strong>Abstract:</strong> This project aims to develop a 2D platform, similar to old-school Pokémon games, simulating the experience of a new student exploring the USP campus. The application will be interactive and educational, allowing the user to learn about the buildings, services, fun facts, and common paths around the campus.
+                <strong>Abstract:</strong> USP Odyssey is a top-down 2D exploration game that uses gamification to help students navigate and connect with the Butantã campus of the University of São Paulo. Developed in Unity, the game presents a stylized representation of the campus, allowing movement on foot, by car, or using the circular bus lines. Progression relies on a collectible system that reveals historical context and curiosities about institutes and landmarks. Inspired by classic exploration games like Pokémon, the design uses different transportation modes as keys to unlock new areas. The architecture employs patterns such as a Finite State Machine and Scriptable Objects to ensure organization and scalability. The prototype demonstrates that a gamified approach can enhance campus discovery and strengthen students’ engagement with their physical environment.            
             </p>
             <p>
                 <strong>Link to the proposal in PDF:</strong>
@@ -142,7 +234,35 @@
             </ul>
         </div>
 
-        <div class="language-switch">
+        <div class="section gallery">
+            <h3>Game Gallery</h3>
+            <p class="gallery-intro">Three key moments from USP Odyssey: on foot, by car, and waiting for the campus bus.</p>
+            <div class="gallery-grid">
+                <figure class="shot-card">
+                    <img src="Screenshots/onfoot.png" alt="Character walking on campus">
+                    <figcaption>
+                        <strong>On foot</strong>
+                        <small>Early exploration of the campus with precise control.</small>
+                    </figcaption>
+                </figure>
+                <figure class="shot-card">
+                    <img src="Screenshots/carro.png" alt="Character driving a car in the game">
+                    <figcaption>
+                        <strong>By car</strong>
+                        <small>Faster movement unlocking new areas.</small>
+                    </figcaption>
+                </figure>
+                <figure class="shot-card">
+                    <img src="Screenshots/onibus.png" alt="Character waiting for the campus bus">
+                    <figcaption>
+                        <strong>Waiting for the bus</strong>
+                        <small>Bus stops integrating campus mobility.</small>
+                    </figcaption>
+                </figure>
+            </div>
+        </div>
+
+        <iv class="language-switch">
             <p>
                 <a href="index.html">Ver esta página em Português</a>
             </p>

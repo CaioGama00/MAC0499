@@ -24,7 +24,7 @@
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             padding: 40px;
-            max-width: 900px;
+            max-width: 1100px;
             width: 100%;
             margin-top: 30px;
             margin-bottom: 30px;
@@ -105,21 +105,112 @@
             padding-top: 20px;
             border-top: 1px solid #bbdefb;
         }
+
+        .hero-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+
+        .hero-logo img {
+            width: min(340px, 80vw);
+            filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15));
+        }
+
+        .gallery {
+            margin-top: 30px;
+        }
+
+        .gallery-intro {
+            text-align: center;
+            color: #455a64;
+            margin-bottom: 18px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .shot-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #e3f2fd;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shot-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 30px rgba(26, 35, 126, 0.16);
+        }
+
+        .shot-card img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            display: block;
+        }
+
+        .shot-card .tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a237e;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.85em;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
+
+        .shot-card figcaption {
+            color: #1a237e;
+            background: #ffffff;
+            padding: 12px 14px 14px;
+            border-top: 1px solid #e3f2fd;
+        }
+
+        .shot-card figcaption strong {
+            color: #1a237e;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .shot-card figcaption small {
+            display: block;
+            color: #455a64;
+            line-height: 1.4;
+        }
+
+        .gallery-tip {
+            margin-top: 12px;
+            text-align: center;
+            color: #546e7a;
+            font-size: 0.95em;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Trabalho de Conclusão de Curso</h1>
         <h2>Caio Rodrigues Gama</h2>
+        <div class="hero-logo">
+            <img src="USP Odyssey/Assets/Resources/Logos/game_logo.png" alt="Logo do USP Odyssey">
+        </div>
 
         <div class="section">
             <h3>Proposta de Trabalho</h3>
             <p>
-                <strong>Título:</strong> Plataforma Interativa 2D para Exploração do Campus da USP
+                <strong>Título:</strong> USP Odyssey: Gamificação e Exploração para o Engajamento Estudantil no Campus Universitário
             </p>
             <p>
-                <strong>Resumo:</strong> Este projeto tem como objetivo desenvolver uma plataforma 2D, semelhante aos jogos da série Pokémon antigos, que simula a experiência de um novo aluno explorando o campus da USP. A aplicação será interativa e educativa, permitindo ao usuário conhecer os prédios, serviços, curiosidades e trajetos mais comuns do campus.
-            </p>
+                <strong>Resumo:</strong> O USP Odyssey é um jogo 2D de exploração com visão superior que utiliza gamificação para facilitar a navegação e fortalecer o senso de pertencimento dos estudantes ao campus Butantã da USP. Desenvolvido no Unity, o jogo apresenta uma representação estilizada da Cidade Universitária, permitindo deslocamento a pé, de carro ou pelos ônibus circulares. A progressão é guiada por um sistema de itens colecionáveis, que revela informações e curiosidades sobre institutos e pontos de interesse. Inspirado em jogos clássicos como Pokémon, o design utiliza diferentes meios de transporte como chaves de acesso a novas áreas. A arquitetura adota padrões como Máquina de Estados Finitos e Scriptable Objects para garantir organização e escalabilidade. O protótipo demonstra que uma abordagem gamificada pode enriquecer a descoberta do campus e promover maior engajamento dos estudantes com seu ambiente universitário.           </p>
             <p>
                 <strong>Link para a proposta em PDF:</strong>
                 <a href="MAC0499_TCC_Proposta.pdf" target="_blank">Visualizar proposta</a>
@@ -141,6 +232,33 @@
             </ul>
         </div>
 
+        <div class="section gallery">
+            <h3>Galeria do Jogo</h3>
+            <p class="gallery-intro">Três momentos-chave do USP Odyssey: a pé, de carro e esperando o circular.</p>
+            <div class="gallery-grid">
+                <figure class="shot-card">
+                    <img src="Screenshots/onfoot.png" alt="Personagem andando a pé no campus">
+                    <figcaption>
+                        <strong>Player a pé</strong>
+                        <small>Exploração inicial do campus com controle preciso.</small>
+                    </figcaption>
+                </figure>
+                <figure class="shot-card">
+                    <img src="Screenshots/carro.png" alt="Personagem dirigindo um carro no jogo">
+                    <figcaption>
+                        <strong>No carro</strong>
+                        <small>Deslocamento mais rápido abrindo novas áreas.</small>
+                    </figcaption>
+                </figure>
+                <figure class="shot-card">
+                    <img src="Screenshots/onibus.png" alt="Personagem aguardando o circular">
+                    <figcaption>
+                        <strong>Esperando o circular</strong>
+                        <small>Pontos de ônibus integrando a mobilidade do campus.</small>
+                    </figcaption>
+                </figure>
+            </div>
+        </div>
         <div class="language-switch">
             <p>
                 <a href="index_eng.html">View this page in English</a>
