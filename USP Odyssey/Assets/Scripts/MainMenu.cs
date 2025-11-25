@@ -13,12 +13,12 @@ public class MainMenu : MonoBehaviour
     public void playGame()
     {
         PlaySound();  // Play the sound when the button is pressed
-        SceneManager.LoadSceneAsync(1);
+        SceneManager.LoadScene(1);
     }
     public void goMenu()
     {
         PlaySound();  // Play the sound when the button is pressed
-        SceneManager.LoadSceneAsync(0);
+        SceneManager.LoadScene(0);
     }
     public void quitGame()
     {
